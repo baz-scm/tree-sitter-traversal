@@ -17,7 +17,7 @@
 //! #     use tree_sitter::Parser;
 //! #     let mut parser = Parser::new();
 //! #     let lang = tree_sitter_rust::language();
-//! #     parser.set_language(lang).expect("Error loading Rust grammar");
+//! #     parser.set_language(&lang).expect("Error loading Rust grammar");
 //! #     return parser.parse("fn double(x: usize) -> usize { x * 2 }", None).expect("Error parsing provided code");
 //! # }
 //!
@@ -435,6 +435,25 @@ function double(x: usize) -> usize {
 
     const EX3: &str = "";
 
+    const CPPEX: &str = r#"
+    std::vector<unsigned char> readFile(const std::string& filePath) {
+        std::ifstream file(filePath, std::ios::binary);
+        if (!file) {
+            std::cerr << "Failed to open file: " << filePath << std::endl;
+            return {};
+        }
+    
+        file.seekg(0, std::ios::end);
+        std::streampos fileSize = file.tellg();
+        file.seekg(0, std::ios::beg);
+    
+        std::vector<unsigned char> buffer(fileSize);
+        file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
+    
+        return buffer;
+    }
+    "#;
+
     /// For a given tree and iteration order, verify that the two callback approaches
     /// and the Iterator approach are all equivalent
     fn generate_traversals(tree: &Tree, order: Order) {
@@ -453,11 +472,20 @@ function double(x: usize) -> usize {
         let mut parser = Parser::new();
         let lang = tree_sitter_rust::language();
         parser
-            .set_language(lang)
+            .set_language(&lang)
             .expect("Error loading Rust grammar");
         return parser
             .parse(code, None)
             .expect("Error parsing provided code");
+    }
+
+    fn get_cpp_tree(code: &str) -> Tree {
+        let mut parser:Parser = Parser::new();
+        let lang = tree_sitter_cpp::language();
+        parser.set_language(&lang).expect("Error loading Cpp grammar");
+        return parser
+                .parse(code, None)
+                .expect("Error parsing provided code");
     }
 
     #[test]
@@ -467,6 +495,14 @@ function double(x: usize) -> usize {
             for order in [Order::Pre, Order::Post] {
                 generate_traversals(&tree, order);
             }
+        }
+    }
+
+    #[test]
+    fn test_cpp() {
+        let tree = get_cpp_tree(CPPEX);
+        for order in [Order::Pre, Order::Post] {
+            generate_traversals(&tree, order);
         }
     }
 
