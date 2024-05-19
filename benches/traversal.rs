@@ -6,7 +6,7 @@ use test::Bencher;
 use std::fs::File;
 use std::io::Read;
 use tree_sitter::{Parser, Tree};
-use tree_sitter_traversal::{traverse_tree, Order};
+use baz_tree_sitter_traversal::{traverse_tree, Order};
 
 fn dogfood() -> Tree {
     let mut file = File::open("./src/lib.rs").expect("src/lib.rs should exist");
@@ -16,7 +16,7 @@ fn dogfood() -> Tree {
     let mut parser = Parser::new();
     let lang = tree_sitter_rust::language();
     parser
-        .set_language(lang)
+        .set_language(&lang)
         .expect("Error loading Rust grammar");
     return parser
         .parse(code, None)
