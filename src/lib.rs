@@ -42,6 +42,9 @@
 //! [`TreeCursor`]: tree_sitter::TreeCursor
 //! [`Cursor`]: crate::Cursor
 #![no_std]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::cargo)]
 
 use core::iter::FusedIterator;
 
@@ -132,9 +135,9 @@ pub enum Order {
 }
 
 /// Iterative traversal of the tree; serves as a reference for both
-/// PreorderTraversal and PostorderTraversal, as they both will call the exact same
+/// `PreorderTraverse` and `PostorderTraverse`, as they both will call the exact same
 /// cursor methods in the exact same order as this function for a given tree; the order
-/// is also the same as traverse_recursive.
+/// is also the same as `traverse_recursive`.
 #[allow(dead_code)]
 fn traverse_iterative<C: Cursor, F>(mut c: C, order: Order, mut cb: F)
 where
@@ -234,8 +237,8 @@ struct PreorderTraverse<C> {
 }
 
 impl<C> PreorderTraverse<C> {
-    pub fn new(c: C) -> Self {
-        PreorderTraverse { cursor: Some(c) }
+    pub const fn new(c: C) -> Self {
+        Self { cursor: Some(c) }
     }
 }
 
@@ -290,8 +293,8 @@ struct PostorderTraverse<C> {
 }
 
 impl<C> PostorderTraverse<C> {
-    pub fn new(c: C) -> Self {
-        PostorderTraverse {
+    pub const fn new(c: C) -> Self {
+        Self {
             cursor: Some(c),
             retracing: false,
         }
@@ -352,7 +355,7 @@ enum TraverseInner<C> {
 }
 
 impl<C> Traverse<C> {
-    pub fn new(c: C, order: Order) -> Self {
+    pub const fn new(c: C, order: Order) -> Self {
         let inner = match order {
             Order::Pre => TraverseInner::Pre(PreorderTraverse::new(c)),
             Order::Post => TraverseInner::Post(PostorderTraverse::new(c)),
@@ -365,13 +368,14 @@ impl<C> Traverse<C> {
 impl<'a> Traverse<tree_sitter::TreeCursor<'a>> {
     #[allow(dead_code)]
     pub fn from_tree(tree: &'a tree_sitter::Tree, order: Order) -> Self {
-        Traverse::new(tree.walk(), order)
+        Self::new(tree.walk(), order)
     }
 }
 
 /// Convenience method to traverse a tree-sitter [`Tree`] in an order according to `order`.
 ///
 /// [`Tree`]: tree_sitter::Tree
+#[must_use]
 #[cfg(feature = "tree-sitter")]
 pub fn traverse_tree(
     tree: &tree_sitter::Tree,
@@ -382,6 +386,8 @@ pub fn traverse_tree(
 
 /// Traverse an n-ary tree using `cursor`, returning the nodes of the tree through an iterator
 /// in an order according to `order`.
+///
+/// # Panics
 ///
 /// `cursor` must be at the root of the tree
 /// (i.e. `cursor.goto_parent()` must return false)
@@ -480,12 +486,14 @@ function double(x: usize) -> usize {
     }
 
     fn get_cpp_tree(code: &str) -> Tree {
-        let mut parser:Parser = Parser::new();
+        let mut parser: Parser = Parser::new();
         let lang = tree_sitter_cpp::language();
-        parser.set_language(&lang).expect("Error loading Cpp grammar");
+        parser
+            .set_language(&lang)
+            .expect("Error loading Cpp grammar");
         return parser
-                .parse(code, None)
-                .expect("Error parsing provided code");
+            .parse(code, None)
+            .expect("Error parsing provided code");
     }
 
     #[test]
