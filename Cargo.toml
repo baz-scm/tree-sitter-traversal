@@ -15,6 +15,11 @@ description = "Traversal of tree-sitter Trees and any arbitrary tree with a Tree
 keywords = ["tree-sitter", "traverse", "traversal", "tree"]
 categories = ["algorithms", "data-structures", "no-std"]
 
+[package.metadata.release]
+allow-branch = ["HEAD"]
+push = false
+tag = false
+
 [dependencies]
 tree-sitter = {version=">= 0.22", optional=true}
 
