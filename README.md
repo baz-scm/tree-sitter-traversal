@@ -15,7 +15,7 @@ Add this to your `Cargo.toml`
 
 ```toml
 [dependencies]
-tree-sitter-traversal = "0.1.3"
+baz-tree-sitter-traversal = "0.1.3"
 ```
 
 ### Example
@@ -23,7 +23,7 @@ tree-sitter-traversal = "0.1.3"
 ```rust
 use tree_sitter::{Node, Tree};
 
-use tree_sitter_traversal::{traverse, traverse_tree, Order};
+use baz_tree_sitter_traversal::{traverse, traverse_tree, Order};
 fn get_tree() -> Tree {
     use tree_sitter::Parser;
     let mut parser = Parser::new();
@@ -56,7 +56,7 @@ fn main() {
 Though this library was designed to be used for `tree-sitter`, that usage is optional, as it can also be used by any struct which implements the `Cursor` trait. When the `tree-sitter` feature is disabled, the library is actually `#![no_std]`. To use without `tree-sitter`, add this to your Cargo.toml instead:
 
 ```toml
-[dependencies.tree-sitter-traversal]
+[dependencies.baz-tree-sitter-traversal]
 version = "0.1.3"
 default-features = false
 ```
