@@ -3,10 +3,10 @@ extern crate test;
 
 use test::Bencher;
 
-use baz_tree_sitter_traversal::{traverse_tree, Order};
 use std::fs::File;
 use std::io::Read;
 use tree_sitter::{Parser, Tree};
+use tree_sitter_traversal::{traverse_tree, Order};
 
 fn dogfood() -> Tree {
     let mut file = File::open("./src/lib.rs").expect("src/lib.rs should exist");

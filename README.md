@@ -22,8 +22,8 @@ baz-tree-sitter-traversal = "0.1.3"
 
 ```rust
 use tree_sitter::{Node, Tree};
+use tree_sitter_traversal::{traverse, traverse_tree, Order};
 
-use baz_tree_sitter_traversal::{traverse, traverse_tree, Order};
 fn get_tree() -> Tree {
     use tree_sitter::Parser;
     let mut parser = Parser::new();
